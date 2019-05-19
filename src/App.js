@@ -7,9 +7,9 @@ import store from "./store";
 
 import AppNavbar from "./Components/Layout/AppNavbar";
 import Dashboard from "./Components/Layout/Dashboard";
-import AddClient from "./Components/Books/AddBook";
-import ClientDetails from "./Components/Books/BookDetails";
-import EditClient from "./Components/Books/EditBook";
+import AddBook from "./Components/Books/AddBook";
+import BookDetails from "./Components/Books/BookDetails";
+import EditBook from "./Components/Books/EditBook";
 import Login from "./Components/Auth/Login.js";
 import Register from "./Components/Auth/Register.js";
 
@@ -29,18 +29,18 @@ class App extends Component {
                 />
                 <Route
                   exact
-                  path="/client/add"
-                  component={UserIsAuthenticated(AddClient)}
+                  path="/book/add"
+                  component={UserIsAuthenticated(AddBook)}
                 />
                 <Route
                   exact
-                  path="/client/edit/:id"
-                  component={UserIsAuthenticated(EditClient)}
+                  path="/book/edit/:id"
+                  component={UserIsAuthenticated(EditBook)}
                 />
                 <Route
                   exact
-                  path="/client/:id"
-                  component={UserIsAuthenticated(ClientDetails)}
+                  path="/book/:id"
+                  component={UserIsAuthenticated(BookDetails)}
                 />
                 <Route
                   exact
