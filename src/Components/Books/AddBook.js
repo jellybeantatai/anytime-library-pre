@@ -7,13 +7,13 @@ import PropTypes from "prop-types";
 import { firestoreConnect } from "react-redux-firebase";
 // import { firestore } from "firebase";
 
-class AddClient extends Component {
+class AddBook extends Component {
   state = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    balance: ""
+    title: "",
+    author: "",
+    genre: "",
+    description: "",
+    issuedTo: ""
   };
 
   onChange = e => {
@@ -24,17 +24,12 @@ class AddClient extends Component {
 
   onSubmit = e => {
     e.preventDefault();
-    const newClient = this.state;
+    const newBook = this.state;
 
     const { firestore } = this.props;
 
-    //if no balance make 0
-    if (newClient.balance === "") {
-      newClient.balance = 0;
-    }
-
     firestore
-      .add({ collection: "clients" }, newClient)
+      .add({ collection: "books" }, newBook)
       .then(() => this.props.history.push("/"));
   };
 
@@ -50,63 +45,51 @@ class AddClient extends Component {
         </div>
 
         <div className="card">
-          <div className="card-header">Add Client</div>
+          <div className="card-header">Add Book</div>
           <div className="card-body">
             <form onSubmit={this.onSubmit}>
               <div className="form-group">
-                <label htmlFor="firstName">First Name</label>
+                <label htmlFor="title">Title</label>
                 <input
                   type="text"
                   className="form-control"
-                  name="firstName"
-                  minLength="2"
+                  name="title"
                   required
                   onChange={this.onChange}
-                  value={this.state.firstName}
+                  value={this.state.title}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="lastName">Last Name</label>
+                <label htmlFor="author">Author</label>
                 <input
                   type="text"
                   className="form-control"
-                  name="lastName"
-                  minLength="2"
+                  name="author"
                   required
                   onChange={this.onChange}
-                  value={this.state.lastName}
+                  value={this.state.author}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  name="email"
-                  onChange={this.onChange}
-                  value={this.state.email}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="phone">Phone</label>
+                <label htmlFor="genre">Genre</label>
                 <input
                   type="text"
                   className="form-control"
-                  name="phone"
+                  name="genre"
+                  onChange={this.onChange}
+                  value={this.state.genre}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="description">Description</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="description"
                   minLength="10"
                   required
                   onChange={this.onChange}
-                  value={this.state.phone}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="balance">Balance</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="balance"
-                  onChange={this.onChange}
-                  value={this.state.balance}
+                  value={this.state.description}
                 />
               </div>
               <input
@@ -122,8 +105,8 @@ class AddClient extends Component {
   }
 }
 
-AddClient.propTypes = {
+AddBook.propTypes = {
   firestore: PropTypes.object.isRequired
 };
 
-export default firestoreConnect()(AddClient);
+export default firestoreConnect()(AddBook);

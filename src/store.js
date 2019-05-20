@@ -7,12 +7,13 @@ import { reduxFirestore, firestoreReducer } from "redux-firestore";
 import notifyReducer from "./Reducers/NotifyReducer";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCTunoHIUdS6wNaetO0p9Bh6BQUVb7DBd4",
-  authDomain: "react-owesome-3a46f.firebaseapp.com",
-  databaseURL: "https://react-owesome-3a46f.firebaseio.com",
-  projectId: "react-owesome-3a46f",
-  storageBucket: "react-owesome-3a46f.appspot.com",
-  messagingSenderId: "1023898337669"
+  apiKey: "AIzaSyDnTosnRAqB4rpgpTrA2e_VQYTlzOELvtw",
+  authDomain: "anytime-library-atl.firebaseapp.com",
+  databaseURL: "https://anytime-library-atl.firebaseio.com",
+  projectId: "anytime-library-atl",
+  storageBucket: "anytime-library-atl.appspot.com",
+  messagingSenderId: "213608870534",
+  appId: "1:213608870534:web:dac1b3960c6f2663"
 };
 
 const rrfConfig = {

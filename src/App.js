@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { UserIsAuthenticated, UserIsNotAuthenticated } from "./Helper/Auth";
+import {
+  UserIsAuthenticated,
+  UserIsNotAuthenticated,
+  UserIsAdmin
+} from "./Helper/Auth";
 
 import { Provider } from "react-redux";
 import store from "./store";
@@ -30,12 +34,12 @@ class App extends Component {
                 <Route
                   exact
                   path="/book/add"
-                  component={UserIsAuthenticated(AddBook)}
+                  component={UserIsAdmin(AddBook)}
                 />
                 <Route
                   exact
                   path="/book/edit/:id"
-                  component={UserIsAuthenticated(EditBook)}
+                  component={UserIsAdmin(EditBook)}
                 />
                 <Route
                   exact

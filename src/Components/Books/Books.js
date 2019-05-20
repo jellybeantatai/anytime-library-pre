@@ -6,67 +6,78 @@ import { compose } from "redux";
 import { firestoreConnect } from "react-redux-firebase";
 import Spinner from "../Layout/Spinner";
 
-class Clients extends Component {
-  state = {
-    totalOwed: null
+class Books extends Component {
+  onReturnClick = () => {
+    const { books, auth, firestore } = this.props;
+
+    const updBookReturn = {
+      issuedTo: ""
+    };
+
+    firestore.update(
+      {
+        collection: "books",
+        doc: books.filter(book => book.issuedTo === auth.email)[0].id
+      },
+      updBookReturn
+    );
   };
 
-  static getDerivedStateFromProps(props, state) {
-    const { clients } = props;
-
-    if (clients) {
-      //Add balances
-      const total = clients.reduce((total, client) => {
-        return total + parseFloat(client.balance.toString());
-      }, 0);
-      return { totalOwed: total };
-    }
-
-    return null;
-  }
-
   render() {
-    const { clients } = this.props;
-    const { totalOwed } = this.state;
+    const { books, auth } = this.props;
 
-    if (clients) {
+    if (books) {
       return (
         <div>
           <div className="row">
             <div className="col-md-6">
               <h2>
-                <i className="fas fa-users" /> Clients
+                <i className="fas fa-users" /> List of Books
               </h2>
             </div>
             <div className="col-md-6">
-              <h5 className="text-right text-secondary">
-                Total Owed:{" "}
-                <span className="text-danger">
-                  ${parseFloat(totalOwed).toFixed(2)}
+              <h6 className="text-right text-secondary">
+                Current Issued Book:{" "}
+                <span className="text-info">
+                  {books.filter(book => book.issuedTo === auth.email)[0]
+                    ? books.filter(book => book.issuedTo === auth.email)[0]
+                        .title
+                    : "None"}
                 </span>
-              </h5>
+                {books.filter(book => book.issuedTo === auth.email)[0] ? (
+                  <div
+                    className="btn btn-warning btn-sm mx-3 my-3"
+                    onClick={this.onReturnClick}
+                  >
+                    {" "}
+                    Return this book
+                  </div>
+                ) : null}
+              </h6>
             </div>
           </div>
           <table className="table table-striped">
             <thead className="thead-inverse">
               <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Balance</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Availability</th>
                 <th />
               </tr>
             </thead>
             <tbody>
-              {clients.map(client => (
-                <tr key={client.id}>
-                  <td>
-                    {client.firstName} {client.lastName}
-                  </td>
-                  <td>{client.email}</td>
-                  <td>${parseFloat(client.balance).toFixed(2)}</td>
+              {books.map(book => (
+                <tr key={book.id}>
+                  <td>{book.title}</td>
+                  <td>{book.author}</td>
+                  {book.issuedTo ? (
+                    <td className="text-danger">Not Available</td>
+                  ) : (
+                    <td className="text-success">Available</td>
+                  )}
                   <td>
                     <Link
-                      to={`/client/${client.id}`}
+                      to={`/book/${book.id}`}
                       className="btn btn-secondary btn-sm"
                     >
                       <i className="fas fa-arrow-circle-right" />
@@ -85,14 +96,15 @@ class Clients extends Component {
   }
 }
 
-Clients.propTypes = {
+Books.propTypes = {
   firestore: PropTypes.object.isRequired,
   clients: PropTypes.array
 };
 
 export default compose(
-  firestoreConnect([{ collection: "clients" }]),
+  firestoreConnect([{ collection: "books" }]),
   connect((state, props) => ({
-    clients: state.firestore.ordered.clients
+    books: state.firestore.ordered.books,
+    auth: state.firebase.auth
   }))
-)(Clients);
+)(Books);

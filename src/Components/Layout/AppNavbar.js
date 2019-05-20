@@ -53,16 +53,6 @@ class AppNavbar extends Component {
               {"  "}
               Anytime Library
             </b>
-            {/* <img
-              src={owesomeLogo}
-              alt="Logo"
-              style={{
-                height: "40px",
-                width: "200px",
-                margin: "auto",
-                display: "block"
-              }}
-            /> */}
           </Link>
           <button
             className="navbar-toggler"

@@ -29,3 +29,15 @@ export const UserIsNotAuthenticated = connectedRouterRedirect({
   authenticatedSelector: ({ firebase: { auth } }) =>
     auth.isLoaded && auth.isEmpty
 });
+
+export const UserIsAdmin = connectedRouterRedirect({
+  wrapperDisplayName: "UserIsAdmin",
+  AuthenticatingComponent: LoadingScreen,
+  allowRedirectBack: true,
+  redirectPath: (state, ownProps) =>
+    locationHelper.getRedirectQueryParam(ownProps) || "/login",
+  authenticatingSelector: ({ firebase: { auth, isInitializing } }) =>
+    !auth.isLoaded || isInitializing === true,
+  authenticatedSelector: ({ firebase: { auth } }) =>
+    auth.isLoaded && !auth.isEmpty && auth.email === "admin@admin.com"
+});

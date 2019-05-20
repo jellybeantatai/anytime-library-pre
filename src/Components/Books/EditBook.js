@@ -6,40 +6,37 @@ import { compose } from "redux";
 import { firestoreConnect } from "react-redux-firebase";
 import Spinner from "../Layout/Spinner";
 
-class EditClient extends Component {
+class EditBook extends Component {
   constructor(props) {
     super(props);
-    this.firstNameInput = React.createRef();
-    this.lastNameInput = React.createRef();
-    this.emailInput = React.createRef();
-    this.phoneInput = React.createRef();
-    this.balanceInput = React.createRef();
+    this.titleInput = React.createRef();
+    this.authorInput = React.createRef();
+    this.genreInput = React.createRef();
+    this.descriptionInput = React.createRef();
+    this.issuedToInput = React.createRef();
   }
 
   onSubmit = e => {
     e.preventDefault();
-    const { client, firestore } = this.props;
+    const { book, firestore } = this.props;
 
     const updClient = {
-      firstName: this.firstNameInput.current.value,
-      lastName: this.lastNameInput.current.value,
-      email: this.emailInput.current.value,
-      phone: this.phoneInput.current.value,
-      balance:
-        this.balanceInput.current.value === ""
-          ? 0
-          : this.balanceInput.current.value
+      title: this.titleInput.current.value,
+      author: this.authorInput.current.value,
+      genre: this.genreInput.current.value,
+      description: this.descriptionInput.current.value,
+      issuedTo: this.issuedToInput.current.value
     };
 
     firestore
-      .update({ collection: "clients", doc: client.id }, updClient)
+      .update({ collection: "books", doc: book.id }, updClient)
       .then(this.props.history.push("/"));
   };
 
   render() {
-    const { client } = this.props;
+    const { book } = this.props;
 
-    if (client) {
+    if (book) {
       return (
         <div>
           <div className="row">
@@ -51,63 +48,63 @@ class EditClient extends Component {
           </div>
 
           <div className="card">
-            <div className="card-header">Edit Client</div>
+            <div className="card-header">Edit Book Details</div>
             <div className="card-body">
               <form onSubmit={this.onSubmit}>
                 <div className="form-group">
-                  <label htmlFor="firstName">First Name</label>
+                  <label htmlFor="title">Title</label>
                   <input
                     type="text"
                     className="form-control"
-                    name="firstName"
+                    name="title"
                     minLength="2"
                     required
-                    ref={this.firstNameInput}
-                    defaultValue={client.firstName}
+                    ref={this.titleInput}
+                    defaultValue={book.title}
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="lastName">Last Name</label>
+                  <label htmlFor="author">Author</label>
                   <input
                     type="text"
                     className="form-control"
-                    name="lastName"
+                    name="author"
                     minLength="2"
                     required
-                    ref={this.lastNameInput}
-                    defaultValue={client.lastName}
+                    ref={this.authorInput}
+                    defaultValue={book.author}
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="email">Email</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    name="email"
-                    ref={this.emailInput}
-                    defaultValue={client.email}
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="phone">Phone</label>
+                  <label htmlFor="genre">Genre</label>
                   <input
                     type="text"
                     className="form-control"
-                    name="phone"
+                    name="genre"
+                    ref={this.genreInput}
+                    defaultValue={book.genre}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="description">Description</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="description"
                     minLength="10"
                     required
-                    ref={this.phoneInput}
-                    defaultValue={client.phone}
+                    ref={this.descriptionInput}
+                    defaultValue={book.description}
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="balance">Balance</label>
+                  <label htmlFor="issuedTo">Issued To</label>
                   <input
                     type="text"
                     className="form-control"
-                    name="balance"
-                    ref={this.balanceInput}
-                    defaultValue={client.balance}
+                    name="issuedTo"
+                    ref={this.issuedToInput}
+                    defaultValue={book.issuedTo}
                   />
                 </div>
                 <input
@@ -126,15 +123,15 @@ class EditClient extends Component {
   }
 }
 
-EditClient.propTypes = {
+EditBook.propTypes = {
   firestore: PropTypes.object.isRequired
 };
 
 export default compose(
   firestoreConnect(props => [
-    { collection: "clients", storeAs: "client", doc: props.match.params.id }
+    { collection: "books", storeAs: "book", doc: props.match.params.id }
   ]),
   connect(({ firestore: { ordered } }, props) => ({
-    client: ordered.client && ordered.client[0]
+    book: ordered.book && ordered.book[0]
   }))
-)(EditClient);
+)(EditBook);

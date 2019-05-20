@@ -7,70 +7,42 @@ import { firestoreConnect } from "react-redux-firebase";
 import Spinner from "../Layout/Spinner";
 import classnames from "classnames";
 
-class ClientDetails extends Component {
-  state = {
-    showBalanceUpdate: false,
-    balanceUpdateAmount: ""
-  };
-
+class BookDetails extends Component {
   onChange = e => {
     this.setState({
       [e.target.name]: e.target.value
     });
   };
 
-  balanceSubmit = e => {
-    e.preventDefault();
+  onIssueClick = () => {
+    const { book, auth, firestore } = this.props;
 
-    const { client, firestore } = this.props;
-    const { balanceUpdateAmount } = this.state;
-
-    const clientUpdate = {
-      balance: parseFloat(balanceUpdateAmount)
+    const updBookIssue = {
+      issuedTo: auth.email
     };
 
-    firestore.update({ collection: "clients", doc: client.id }, clientUpdate);
+    firestore
+      .update(
+        {
+          collection: "books",
+          doc: book.id
+        },
+        updBookIssue
+      )
+      .then(() => this.props.history.push("/"));
   };
 
   onDeleteClick = () => {
-    const { client, firestore } = this.props;
+    const { book, firestore } = this.props;
     firestore
-      .delete({ collection: "clients", doc: client.id })
+      .delete({ collection: "books", doc: book.id })
       .then(() => this.props.history.push("/"));
   };
 
   render() {
-    const { showBalanceUpdate, balanceUpdateAmount } = this.state;
-    const { client } = this.props;
+    const { book, auth, books } = this.props;
 
-    let balanceForm = "";
-
-    if (showBalanceUpdate) {
-      balanceForm = (
-        <form onSubmit={this.balanceSubmit}>
-          <div className="input-group">
-            <input
-              type="text"
-              className="form-control"
-              name="balanceUpdateAmount"
-              placeholder="Add new balance"
-              value={balanceUpdateAmount}
-              onChange={this.onChange}
-            />
-            <div className="input-group-append">
-              <input
-                type="submit"
-                value="Update"
-                className="btn btn-outline-dark"
-              />
-            </div>
-          </div>
-        </form>
-      );
-    } else {
-      balanceForm = null;
-    }
-    if (client) {
+    if (book) {
       return (
         <div>
           <div className="row">
@@ -80,64 +52,53 @@ class ClientDetails extends Component {
                 Back to Dashboard
               </Link>
             </div>
-            <div className="col-md-6">
-              <div className="btn-group float-right">
-                <Link to={`/client/edit/${client.id}`} className="btn btn-dark">
-                  Edit
-                </Link>
-                <button onClick={this.onDeleteClick} className="btn btn-danger">
-                  Delete
-                </button>
+            {auth.email === "admin@admin.com" ? (
+              <div className="col-md-6">
+                <div className="btn-group float-right">
+                  <Link to={`/book/edit/${book.id}`} className="btn btn-dark">
+                    Edit
+                  </Link>
+                  <button
+                    onClick={this.onDeleteClick}
+                    className="btn btn-danger"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
           <hr />
           <div className="card">
             <h3 className="card-header">
-              {client.firstName} {client.lastName}
+              {book.title}
+              <a
+                href="#!"
+                className={classnames({
+                  "btn btn-info btn-lg float-right": !book.issuedTo,
+                  "btn btn-info btn-lg float-right disabled": book.issuedTo,
+                  "btn btn-danger btn-lg float-right disabled": books.filter(
+                    book => book.issuedTo === auth.email
+                  )[0]
+                })}
+                onClick={this.onIssueClick}
+              >
+                Issue this book
+              </a>
             </h3>
             <div className="card-body">
               <div className="row">
                 <div className="col-md-8 col-sm-6">
-                  <h5>Client ID: </h5>
-                  <span className="text-secondary">{client.id}</span>
-                </div>
-                <div className="col-md-4 col-sm-6">
-                  <h3 className="pull-right">
-                    Balance:{" "}
-                    <span
-                      className={classnames({
-                        "text-danger": client.balance > 0,
-                        "text-success": client.balance === 0,
-                        "text-primary": client.balance < 0
-                      })}
-                    >
-                      ${parseFloat(client.balance).toFixed(2)}
-                    </span>{" "}
-                    <small>
-                      <a
-                        href="#!"
-                        onClick={() =>
-                          this.setState({
-                            showBalanceUpdate: !this.state.showBalanceUpdate
-                          })
-                        }
-                      >
-                        <i className="fas fa-pencil-alt" />
-                      </a>
-                    </small>
-                  </h3>
-                  {balanceForm}
+                  <h5>Author: </h5>
+                  <span className="text-secondary">{book.author}</span>
                 </div>
               </div>
 
               <hr />
               <ul className="list-group">
+                <li className="list-group-item">Genre: {book.genre}</li>
                 <li className="list-group-item">
-                  Contact Email: {client.email}
-                </li>
-                <li className="list-group-item">
-                  Contact Phone: {client.phone}
+                  About the book: {book.description}
                 </li>
               </ul>
             </div>
@@ -150,20 +111,22 @@ class ClientDetails extends Component {
   }
 }
 
-ClientDetails.propTypes = {
+BookDetails.propTypes = {
   firestore: PropTypes.object.isRequired
 };
 
 export default compose(
   firestoreConnect(props => [
-    { collection: "clients", storeAs: "client", doc: props.match.params.id }
+    { collection: "books", storeAs: "book", doc: props.match.params.id }
   ]),
 
   // connect(({ firestore: { ordered } }, props) => ({
-  //   client: ordered.client && ordered.client[0]          ----> Shortcut
+  //   book: ordered.book && ordered.book[0]          ----> Shortcut
   // }))
 
   connect((state, props) => ({
-    client: state.firestore.ordered.client && state.firestore.ordered.client[0]
+    book: state.firestore.ordered.book && state.firestore.ordered.book[0],
+    books: state.firestore.ordered.books,
+    auth: state.firebase.auth
   }))
-)(ClientDetails);
+)(BookDetails);
