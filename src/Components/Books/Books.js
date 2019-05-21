@@ -7,6 +7,10 @@ import { firestoreConnect } from "react-redux-firebase";
 import Spinner from "../Layout/Spinner";
 
 class Books extends Component {
+  state = {
+    search: ""
+  };
+
   onReturnClick = () => {
     const { books, auth, firestore } = this.props;
 
@@ -21,6 +25,12 @@ class Books extends Component {
       },
       updBookReturn
     );
+  };
+
+  onChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
   };
 
   render() {
@@ -56,6 +66,18 @@ class Books extends Component {
               </h6>
             </div>
           </div>
+          <div className="row">
+            <div className="col-md-12">
+              <input
+                class="form-control form-control-lg my-4"
+                type="text"
+                placeholder="Search By Title🔎"
+                name="search"
+                onChange={this.onChange}
+                value={this.state.search}
+              />
+            </div>
+          </div>
           <table className="table table-striped">
             <thead className="thead-inverse">
               <tr>
@@ -66,26 +88,32 @@ class Books extends Component {
               </tr>
             </thead>
             <tbody>
-              {books.map(book => (
-                <tr key={book.id}>
-                  <td>{book.title}</td>
-                  <td>{book.author}</td>
-                  {book.issuedTo ? (
-                    <td className="text-danger">Not Available</td>
-                  ) : (
-                    <td className="text-success">Available</td>
-                  )}
-                  <td>
-                    <Link
-                      to={`/book/${book.id}`}
-                      className="btn btn-secondary btn-sm"
-                    >
-                      <i className="fas fa-arrow-circle-right" />
-                      Details
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {books
+                .filter(book =>
+                  book.title
+                    .toLowerCase()
+                    .includes(this.state.search.toLowerCase())
+                )
+                .map(book => (
+                  <tr key={book.id}>
+                    <td>{book.title}</td>
+                    <td>{book.author}</td>
+                    {book.issuedTo ? (
+                      <td className="text-danger">Not Available</td>
+                    ) : (
+                      <td className="text-success">Available</td>
+                    )}
+                    <td>
+                      <Link
+                        to={`/book/${book.id}`}
+                        className="btn btn-secondary btn-sm"
+                      >
+                        <i className="fas fa-arrow-circle-right" />
+                        Details
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
